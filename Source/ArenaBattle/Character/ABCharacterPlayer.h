@@ -1,14 +1,19 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Character/ABCharacterBase.h"
+#include "InputActionValue.h"
+
 #include "ABCharacterPlayer.generated.h"
+
 
 /**
  * 
  */
+class UInputAction;
+
 UCLASS()
 class ARENABATTLE_API AABCharacterPlayer : public AABCharacterBase
 {
@@ -16,6 +21,15 @@ class ARENABATTLE_API AABCharacterPlayer : public AABCharacterBase
 
 public:
 	AABCharacterPlayer();
+
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+protected:
+	void Move(const FInputActionValue& Value);
+
+	void Look(const FInputActionValue& Value);
+	
+
 
 protected:
 	virtual void BeginPlay() override;
@@ -27,4 +41,20 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	TObjectPtr<class UCameraComponent> Camera;
+
+	// 입력 관련 설정.
+protected:
+	// 입력 매핑 컨텍스트.
+	UPROPERTY(VisibleAnywhere,Category=Input,BlueprintReadOnly)
+	TObjectPtr<class UInputMappingContext> DefaultMappingContext;
+
+	// 입력 액션.
+	UPROPERTY(VisibleAnywhere, Category = Input, BlueprintReadOnly)
+	TObjectPtr<UInputAction> MoveAction;
+
+	UPROPERTY(VisibleAnywhere, Category = Input, BlueprintReadOnly)
+	TObjectPtr<UInputAction> LookAction;
+
+	UPROPERTY(VisibleAnywhere, Category = Input, BlueprintReadOnly)
+	TObjectPtr<UInputAction> JumpAction;
 };
