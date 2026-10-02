@@ -1,4 +1,4 @@
-﻿// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
 
@@ -12,9 +12,11 @@ public class ArenaBattle : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
-
 		// 인클루드 경로 탐색을 위한 모듈 이름 추가.
-		PublicIncludePaths.AddRange(new string[] { "ArenaBattle" });
+		PublicIncludePaths.AddRange(new string[]
+		{
+			"ArenaBattle"
+		});
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

@@ -13,13 +13,12 @@ UCLASS()
 class ARENABATTLE_API UABCharacterControlData : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
-
+	
 public:
 	UABCharacterControlData();
 
-
 	// 속성.
-	// 
+
 	// 폰에 설정할 회전 속성.
 	UPROPERTY(EditAnywhere, Category = Pawn)
 	uint32 bUseControllerRotationYaw : 1;
@@ -29,13 +28,13 @@ public:
 	uint32 bUseControllerDesiredRotation : 1;
 
 	UPROPERTY(EditAnywhere, Category = CharacterMovement)
-	uint32 bOrientRotationToMovement : 1;
+	uint32 bUseOrientToMovement : 1;
 
 	UPROPERTY(EditAnywhere, Category = CharacterMovement)
 	FRotator RotationRate;
 
 	// 사용할 입력 매핑 컨텍스트 애셋.
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = Input)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input)
 	TObjectPtr<class UInputMappingContext> InputMappingContext;
 
 	// 스프링 암 관련 속성.

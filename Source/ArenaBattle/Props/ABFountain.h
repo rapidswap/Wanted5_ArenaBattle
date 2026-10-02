@@ -26,12 +26,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-
 public:
 	// 컴포넌트 구성.
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")
 	TObjectPtr<UStaticMeshComponent> Body;
 
-	UPROPERTY(VisibleAnywhere, Category = "Mesh")
+	UPROPERTY(VisibleAnywhere, Category = Mesh)
 	TObjectPtr<UStaticMeshComponent> Water;
 };

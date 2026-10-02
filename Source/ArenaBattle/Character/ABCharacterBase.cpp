@@ -1,9 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/ABCharacterBase.h"
-#include "Character/ABCharacterControlData.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "ABCharacterControlData.h"
+#include <GameFramework/CharacterMovementComponent.h>
+
 // Sets default values
 AABCharacterBase::AABCharacterBase()
 {
@@ -12,7 +13,7 @@ AABCharacterBase::AABCharacterBase()
 
 	// 맵(TMap) 설정.
 	static ConstructorHelpers::FObjectFinder<UABCharacterControlData> ShoulderDataRef(
-		TEXT("/Game/ArenaBattle/CharacterContorl/ABC_Shoulder.ABC_Shoulder")
+		TEXT("/Game/ArenaBattle/CharacterControl/ABC_Shoulder.ABC_Shoulder")
 	);
 
 	if (ShoulderDataRef.Succeeded())
@@ -24,7 +25,7 @@ AABCharacterBase::AABCharacterBase()
 	}
 
 	static ConstructorHelpers::FObjectFinder<UABCharacterControlData> QuaterDataRef(
-		TEXT("/Game/ArenaBattle/CharacterContorl/ABC_Quater.ABC_Quater")
+		TEXT("/Game/ArenaBattle/CharacterControl/ABC_Quater.ABC_Quater")
 	);
 
 	if (QuaterDataRef.Succeeded())
@@ -34,39 +35,24 @@ AABCharacterBase::AABCharacterBase()
 			QuaterDataRef.Object
 		);
 	}
-
 }
 
-// Called when the game starts or when spawned
-void AABCharacterBase::BeginPlay()
+void AABCharacterBase::SetCharacterControlData(
+	const UABCharacterControlData* InCharacterControlData)
 {
-	Super::BeginPlay();
+	// 데이터에서 속성을 가져와서 필요한 곳에 설정.
+
+	// Pawn 설정.
+	bUseControllerRotationYaw 
+		= InCharacterControlData->bUseControllerRotationYaw;
+
+	// 캐릭터 무브먼트 설정.
+	GetCharacterMovement()->bUseControllerDesiredRotation
+		= InCharacterControlData->bUseControllerDesiredRotation;
 	
+	GetCharacterMovement()->bOrientRotationToMovement
+		= InCharacterControlData->bUseOrientToMovement;
+
+	GetCharacterMovement()->RotationRate
+		= InCharacterControlData->RotationRate;
 }
-
-void AABCharacterBase::SetCharacterControlData(const UABCharacterControlData* InCharacterControlData)
-{
-	bUseControllerRotationYaw = InCharacterControlData->bUseControllerRotationYaw;
-
-	GetCharacterMovement()->bUseControllerDesiredRotation = InCharacterControlData->bUseControllerDesiredRotation;
-
-	GetCharacterMovement()->bOrientRotationToMovement = InCharacterControlData->bOrientRotationToMovement;
-
-	GetCharacterMovement()->RotationRate = InCharacterControlData->RotationRate;
-
-}
-
-// Called every frame
-void AABCharacterBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-// Called to bind functionality to input
-void AABCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-

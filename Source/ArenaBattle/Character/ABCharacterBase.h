@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -8,7 +8,7 @@
 
 // 입력 컨트롤을 관리하기 위한 열거형.
 UENUM()
-enum class ECharacterControlType :uint8
+enum class ECharacterControlType : uint8
 {
 	Shoulder,
 	Quater
@@ -24,25 +24,14 @@ public:
 	AABCharacterBase();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-	
+
 	// 컨트롤 데이터 설정.
-	virtual void SetCharacterControlData(const class UABCharacterControlData* InCharacterControlData);
+	virtual void SetCharacterControlData(
+		const class UABCharacterControlData* InCharacterControlData
+	);
 
 protected:
 	// 컨트롤 타입별로 컨트롤 데이터를 관리하기 위한 맵.
-	// TMap-> 키-값 쌍으로 저장하는 자료구조.
-	TMap<ECharacterControlType, class UABCharacterControlData*> CharacterControlMap;
-
-	UPROPERTY()
-	TMap<ECharacterControlType, TObjectPtr<class UABCharacterControlData>> CharacterControlManager;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	// TMap -> 키-값 쌍으로 저장하는 자료구조.
+	TMap<ECharacterControlType, class UABCharacterControlData*> CharacterControlManager;
 };
