@@ -29,7 +29,7 @@ public:
 	uint32 bUseControllerDesiredRotation : 1;
 
 	UPROPERTY(EditAnywhere, Category = CharacterMovement)
-	uint32 bUseOrientToMovement : 1;
+	uint32 bOrientRotationToMovement : 1;
 
 	UPROPERTY(EditAnywhere, Category = CharacterMovement)
 	FRotator RotationRate;

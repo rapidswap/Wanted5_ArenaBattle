@@ -23,11 +23,21 @@ public:
 	AABCharacterPlayer();
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+	void SetCharacterControl(ECharacterControlType NewCharacterControlType);
+
+	// 컨트롤 데이터 설정 함수.
+	virtual void SetCharacterControlData(const class UABCharacterControlData* InCharacterControlData) override;
 
 protected:
-	void Move(const FInputActionValue& Value);
+	void ShoulderMove(const FInputActionValue& Value);
+		
+	void ShoulderLook(const FInputActionValue& Value);
 
-	void Look(const FInputActionValue& Value);
+	void QuaterMove(const FInputActionValue& Value);
+
+	// V키에 대응해서 실행할 함수.
+	void ChangeCharacterControl();
 	
 
 
@@ -45,16 +55,26 @@ protected:
 	// 입력 관련 설정.
 protected:
 	// 입력 매핑 컨텍스트.
-	UPROPERTY(VisibleAnywhere,Category=Input,BlueprintReadOnly)
-	TObjectPtr<class UInputMappingContext> DefaultMappingContext;
+	//UPROPERTY(VisibleAnywhere,Category=Input,BlueprintReadOnly)
+	//TObjectPtr<class UInputMappingContext> DefaultMappingContext;
 
 	// 입력 액션.
 	UPROPERTY(VisibleAnywhere, Category = Input, BlueprintReadOnly)
-	TObjectPtr<UInputAction> MoveAction;
+	TObjectPtr<UInputAction> ShoulderMoveAction;
 
 	UPROPERTY(VisibleAnywhere, Category = Input, BlueprintReadOnly)
-	TObjectPtr<UInputAction> LookAction;
+	TObjectPtr<UInputAction> ShoulderLookAction;
 
 	UPROPERTY(VisibleAnywhere, Category = Input, BlueprintReadOnly)
 	TObjectPtr<UInputAction> JumpAction;
+
+	UPROPERTY(VisibleAnywhere, Category = Input, BlueprintReadOnly)
+	TObjectPtr<UInputAction> QuaterMoveAction;
+
+	UPROPERTY(VisibleAnywhere, Category = Input, BlueprintReadOnly)
+	TObjectPtr<UInputAction> ChangeControlAction;
+
+	// 현재 사용 중인 컨트롤 타입을 추적 하는 변수.
+	UPROPERTY(VisibleAnywhere, Category = CharacterControl)
+	ECharacterControlType CurrentCharacterControlType;
 };
