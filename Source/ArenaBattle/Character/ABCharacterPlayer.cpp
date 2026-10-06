@@ -117,6 +117,16 @@ AABCharacterPlayer::AABCharacterPlayer()
 		ChangeControlAction = ChangeControlActionRef.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UInputAction> AttackActionRef(
+		TEXT("/Game/ArenaBattle/Input/Actions/IA_Attack.IA_Attack")
+	);
+
+	if (AttackActionRef.Succeeded())
+	{
+		AttackAction = AttackActionRef.Object;
+	}
+
+
 	// 기본 컨트롤 설정.
 	CurrentCharacterControlType = ECharacterControlType::Shoulder;
 }
@@ -182,6 +192,13 @@ void AABCharacterPlayer::SetupPlayerInputComponent(
 			ETriggerEvent::Started,
 			this,
 			&AABCharacterPlayer::ChangeCharacterControl
+		);
+
+		EnhancedInputComponent->BindAction(
+			AttackAction,
+			ETriggerEvent::Triggered,
+			this,
+			&AABCharacterPlayer::Attack
 		);
 	}
 }
@@ -318,5 +335,30 @@ void AABCharacterPlayer::ChangeCharacterControl()
 	else if (CurrentCharacterControlType == ECharacterControlType::Quater)
 	{
 		SetCharacterControl(ECharacterControlType::Shoulder);
+	}
+}
+
+void AABCharacterPlayer::Attack()
+{
+	// 몽타주 재생.
+	// 몽타주 재생을 위해 애님 인스턴스 가져오기.
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance)
+	{
+		// 몽타주 재생 속도.
+		const float AttackSpeedRate = 1.0f;
+
+		// 몽타주 재생.
+		AnimInstance->Montage_Play(ComboAttackMontage, AttackSpeedRate);
+
+		// 몽타주 종료.
+		FOnMontageEnded OnMontageEnded;
+		OnMontageEnded.BindUObject(this, &AABCharacterPlayer::ComboActionEnded);
+
+		AnimInstance->Montage_SetEndDelegate(OnMontageEnded, ComboAttackMontage);
+
+		// 공격 모션 중에는 이동하지 못하게 설정.
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+
 	}
 }
