@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interface/ABAnimationAttackInterface.h"
 #include "ABCharacterBase.generated.h"
 
 // 입력 컨트롤을 관리하기 위한 열거형.
@@ -15,7 +16,7 @@ enum class ECharacterControlType : uint8
 };
 
 UCLASS()
-class ARENABATTLE_API AABCharacterBase : public ACharacter
+class ARENABATTLE_API AABCharacterBase : public ACharacter, public IABAnimationAttackInterface
 {
 	GENERATED_BODY()
 
@@ -23,6 +24,16 @@ public:
 	// Sets default values for this character's properties
 	AABCharacterBase();
 
+protected:
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
+	// Dead 처리.
+protected:
+	// 죽음 설정 함수.
+	virtual void SetDead();
+
+	// 죽는 애니메이션 재생 함수.
+	void PlayDeadAnimation();
 protected:
 
 	// 컨트롤 데이터 설정.
@@ -47,6 +58,9 @@ protected:
 	// 설정된 시간 이전에 입력이 제대로 들어왔는지 확인하는데 사용.
 	void ComboCheck();
 
+	// 공격 감지(판정) 함수.
+	virtual void AttackHitCheck() override;
+
 protected:
 	// 컨트롤 타입별로 컨트롤 데이터를 관리하기 위한 맵.
 	// TMap -> 키-값 쌍으로 저장하는 자료구조.
@@ -70,5 +84,13 @@ protected:
 	// 콤보 점프(섹션 점프) 판정할 때 사용할 플래그.
 	UPROPERTY(VisibleAnywhere, Category = Attack)
 	bool bHasNextComboCommand = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+	TObjectPtr<class UAnimMontage> DeadMontage;
+	
+	//  죽은 뒤에 약간의 시간을 대기 (딜레이) 한 후 삭제.
+	float DeadEventDelayTime = 5.0f;
+
+
 };
 
