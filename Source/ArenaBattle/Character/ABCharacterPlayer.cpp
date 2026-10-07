@@ -50,7 +50,7 @@ AABCharacterPlayer::AABCharacterPlayer()
 
 	// 메시 애셋 지정.
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMesh(
-		TEXT("/Game/InfinityBladeWarriors/Character/CompleteCharacters/SK_CharM_Cardboard.SK_CharM_Cardboard")
+		TEXT("/Game/InfinityBladeWarriors/Character/CompleteCharacters/SK_CharM_Robo.SK_CharM_Robo")
 	);
 
 	// 애셋 로드에 성공하면 스켈레탈 메시 설정.
