@@ -9,6 +9,9 @@
 #include "Engine/DamageEvents.h"
 #include <GameFramework/CharacterMovementComponent.h>
 
+#include <CharacterStat/ABCharacterStatComponent.h>
+#include <UI/ABWidgetComponent.h>
+
 // Sets default values
 AABCharacterBase::AABCharacterBase()
 {
@@ -63,6 +66,36 @@ AABCharacterBase::AABCharacterBase()
 		DeadMontage = DeadMontageRef.Object;
 	}
 
+	// 스탯/위젯 컴포넌트 생성 및 설정.
+	// 액터가 컴포넌트를 가지는 형태를 "컴포지션(Composition) 이라고 함.
+	Stat = CreateDefaultSubobject<UABCharacterStatComponent>(TEXT("Stat"));
+	HpBar = CreateDefaultSubobject<UABWidgetComponent>(TEXT("Widget"));
+	
+	// 위젯 컴포넌트는 씬 컴포넌트 (트랜스폼을 가지는)이기 때문에 게층 설정 필요함.
+	HpBar->SetupAttachment(GetMesh());
+	// 캐릭터 머리 위에 보일 수 있도록 z 위치 조정.
+	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 180.0f));
+
+	// 위젯 설정.
+	//Hpbar->SetWidgetClass();
+	static ConstructorHelpers::FClassFinder<UUserWidget> HpBarWidgetRef(TEXT("/Game/ArenaBattle/UI/WBP_HpBar.WBP_HpBar_C"));
+	if (HpBarWidgetRef.Succeeded())
+	{
+		// 생성할 위젯 클래스 설정(타입 설정).
+		HpBar->SetWidgetClass(HpBarWidgetRef.Class);
+		
+		// UI가 그려질 공간 설정(화면 공간).
+		HpBar->SetWidgetSpace(EWidgetSpace::Screen);
+
+		// UI가 그려질 크기 설정.
+		HpBar->SetDrawSize(FVector2D(150.0f, 15.0f));
+
+		// 콜리전 끄기.
+		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+
+	Stat->OnHpZero.AddUObject(this, &AABCharacterBase::SetDead);
+
 }
 
 float AABCharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -70,7 +103,8 @@ float AABCharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	// 대미지 받으면 죽음 처리 함수 호출.
-	SetDead();
+	//SetDead();
+	Stat->ApplyDamage(DamageAmount);
 
 	return DamageAmount;
 }
@@ -229,6 +263,8 @@ void AABCharacterBase::ComboCheck()
 			// 다음 단계 콤보 설정.
 			// CurrentCombo + 1
 			CurrentCombo = FMath::Clamp(CurrentCombo+1,1,ComboActionData->MaxComboCount);
+
+			UE_LOG(LogTemp, Log, TEXT("%d 번쨰"), CurrentCombo);
 
 			// 점프할 섹션 이름 구성.
 			FName NextSection = *FString::Printf(TEXT("%s%d"), *ComboActionData->MontageSectionNamePrefix, CurrentCombo);

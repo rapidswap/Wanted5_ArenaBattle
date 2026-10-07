@@ -67,7 +67,7 @@ protected:
 	TMap<ECharacterControlType, class UABCharacterControlData*> CharacterControlManager;
 
 	// 콤보 몽타주 애셋.
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category=Attack)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attack)
 	TObjectPtr<class UAnimMontage> ComboAttackMontage;
 
 	// 콤보 액션 처리 데이터.
@@ -87,10 +87,16 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
 	TObjectPtr<class UAnimMontage> DeadMontage;
-	
+
 	//  죽은 뒤에 약간의 시간을 대기 (딜레이) 한 후 삭제.
 	float DeadEventDelayTime = 5.0f;
 
+protected:
+	// 스탯 컴포넌트.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UABCharacterStatComponent> Stat;
 
+	// 위젯 컴포넌트.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Widget, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UABWidgetComponent> HpBar;
 };
-
