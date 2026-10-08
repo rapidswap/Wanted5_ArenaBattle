@@ -4,14 +4,22 @@
 #include "Character/ABCharacterBase.h"
 #include "ABCharacterControlData.h"
 #include "ABComboActionData.h"
-#include "Components/CapsuleComponent.h"
 #include "Physics/ABCollision.h"
-#include "Engine/DamageEvents.h"
-#include <GameFramework/CharacterMovementComponent.h>
-
 #include <CharacterStat/ABCharacterStatComponent.h>
 #include <UI/ABWidgetComponent.h>
 #include "UI/ABHpBarWidget.h"
+#include "Item/ABItemData.h"
+#include "Item/ABWeaponItemData.h"
+
+#include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Engine/DamageEvents.h"
+#include <GameFramework/CharacterMovementComponent.h>
+
+
+
+// 커스텀 로그 카테고리 정의.
+DEFINE_LOG_CATEGORY(LogABCharacter);
 
 // Sets default values
 AABCharacterBase::AABCharacterBase()
@@ -94,17 +102,26 @@ AABCharacterBase::AABCharacterBase()
 		// 콜리전 끄기.
 		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
-
-
 	
+	// 아이템 종류별로 실행할 처리 로직(함수)을 델리게이트 배열에 추가.
+	/*
+		Weapon=0,
+		Potion,
+		Scroll
+	*/
+	TakeItemActions.Add(FOnTakeItemDelegate::CreateUObject(this, &AABCharacterBase::EquipWeapon));
+	TakeItemActions.Add(FOnTakeItemDelegate::CreateUObject(this, &AABCharacterBase::DrinkPotion));
+	TakeItemActions.Add(FOnTakeItemDelegate::CreateUObject(this, &AABCharacterBase::ReadScroll));
+
+	// 스켈레탈 메시 생성.
+	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
+	Weapon->SetupAttachment(GetMesh(), TEXT("hand_rSocket"));
 }
-
-
 
 void AABCharacterBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
+	
 	// 델리게이트 함수 등록.
 	Stat->OnHpZero.AddUObject(this, &AABCharacterBase::SetDead);
 }
@@ -121,6 +138,40 @@ float AABCharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	Stat->ApplyDamage(DamageAmount);
 
 	return DamageAmount;
+}
+
+void AABCharacterBase::TakeItem(UABItemData* InItemData)
+{
+	// 아이템 유효성 확인.
+	if (InItemData)
+	{
+		uint8 ItemIndex = (uint8)InItemData->Type;
+
+		// 델리게이트를 통해서 함수 호출.
+		TakeItemActions[ItemIndex].ExecuteIfBound(InItemData);
+	}
+}
+
+void AABCharacterBase::DrinkPotion(UABItemData* InItemData)
+{
+	UE_LOG(LogABCharacter, Log, TEXT("Drink Potion"));
+}
+
+void AABCharacterBase::EquipWeapon(UABItemData* InItemData)
+{
+	// UE_LOG(LogABCharacter, Log, TEXT("Equip Weapon"));
+
+	// 수집한 아이템으로부터 무기 스켈레탈 메시 애셋을 불러와 설정.
+	UABWeaponItemData* WeaponItemData = Cast<UABWeaponItemData>(InItemData);
+	if (WeaponItemData)
+	{
+		Weapon->SetSkeletalMesh(WeaponItemData->WeaponMesh);
+	}
+}
+
+void AABCharacterBase::ReadScroll(UABItemData* InItemData)
+{
+	UE_LOG(LogABCharacter, Log, TEXT("Read Scroll"));
 }
 
 void AABCharacterBase::SetDead()
