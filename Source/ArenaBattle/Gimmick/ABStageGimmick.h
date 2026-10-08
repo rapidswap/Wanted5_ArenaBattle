@@ -6,6 +6,20 @@
 #include "GameFramework/Actor.h"
 #include "ABStageGimmick.generated.h"
 
+// 스테이지 상태를 나타내는 열거형 선언.
+UENUM(BlueprintType)
+enum class EStageState :uint8
+{
+	Ready = 0,
+	Fight,
+	Reward,
+	Next
+};
+
+
+// 상태에 따른 처리르 위해 델리게이트 선언.
+DECLARE_DELEGATE(FOnStageChangedDelegate);
+
 UCLASS()
 class ARENABATTLE_API AABStageGimmick : public AActor
 {
@@ -15,6 +29,9 @@ public:
 	// Sets default values for this actor's properties
 	AABStageGimmick();
 
+protected:
+	// 액터의 상태가 변경될 때 엔진에서 호출해주는 함수.
+	virtual void OnConstruction(const FTransform& Transform) override;
 
 	// 스테이지 관련 변수 및 함수.
 protected:
@@ -28,7 +45,7 @@ protected:
 
 	// 스테이지 트리거에 콜백으로 등록할 함수 선언.
 	UFUNCTION()
-	void OnStageComponentBeginOverlap(
+	void OnStageTriggerBeginOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
@@ -48,11 +65,54 @@ protected:
 
 	// 문에 배치한 박스 컴포넌트와 충돌했을 때 실행할 콜백 함수.
 	UFUNCTION()
-	void OnGateComponentBeginOverlap(
+	void OnGateTriggerBeginOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex,
 		bool bFromSweep,
 		const FHitResult& SweepResult);
+
+	// 스테이지.
+protected:
+	// 현재 상태를 나타내는 열거형 선언.
+	UPROPERTY(EditAnywhere, Category = "Stage", meta = (AllowPrivateAccess = "true"))
+	EStageState CurrentState;
+
+	// 새로운 상태를 설정할 때 사용할 함수.
+	void SetState(EStageState InNewState);
+
+	// 상태에 따른 처리 분리를 위해 열거형-델리게이트 조합으로 관리.
+	TMap<EStageState, FOnStageChangedDelegate> StateChangeActions;
+
+	// 상태 변경에 따른 처리 함수.
+	void SetReady();
+	void SetFight();
+	void SetChooseReward();
+	void SetChooseNext();
+
+	// 4개의 문을 열고/닫는 함수.
+	void OpenAllGates();
+	void CloseAllGates();
+
+	// 대전 처리.
+protected:
+	// 캐릭터와 싸울 NPC 캐릭터 클래스 타입.
+	UPROPERTY(EditAnywhere, Category = "Fight",meta=(AllowPrivateAccess="true"))
+	TSubclassOf<class AABCharacterNonPlayer> OpponentClass;
+
+	// NPC 생성하기까지 대기할 시간.
+	UPROPERTY(EditAnywhere, Category = "Fight", meta = (AllowPrivateAccess = "true"))
+	float OpponentSpawnTime;
+
+	// NPC가 죽었을 때(Destroy 됐을 때) 발생하는 델리게이트에 등록할 함수.
+	UFUNCTION()
+	void OnOpponentDestroyed(AActor* DetroyedActor);
+
+	// 타이머 핸들.
+	FTimerHandle OpponentTimerHandle;
+
+	// 타이머 종료 후에 NPC 생성세 사용할 함수.
+	void OnOpponentSpawn();
+	
 };
