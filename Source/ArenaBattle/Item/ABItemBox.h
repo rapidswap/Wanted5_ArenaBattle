@@ -15,6 +15,13 @@ public:
 	// Sets default values for this actor's properties
 	AABItemBox();
 
+	// Getter.
+	FORCEINLINE class UBoxComponent* GetTrigger() const { return Trigger; }
+
+protected:
+	// 초기화를 위한 함수 오버라이드.
+	virtual void PostInitializeComponents() override;
+
 protected:
 	// UFUCNTION 키워드 등록 필수.
 	// Dynamic 타입의 델리게이트에는 UFUNCTION 필요함.
