@@ -2,6 +2,7 @@
 
 
 #include "Character/ABCharacterNonPlayer.h"
+#include "AI/ABAIController.h"
 #include "Engine/AssetManager.h"
 
 AABCharacterNonPlayer::AABCharacterNonPlayer()
@@ -26,6 +27,12 @@ AABCharacterNonPlayer::AABCharacterNonPlayer()
 	{
 		GetMesh()->SetAnimInstanceClass(CharacterAnim.Class);
 	}
+
+	// AIController 설정.
+	AIControllerClass = AABAIController::StaticClass();
+
+	// 빙의(Possess) 옵션 설정.
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 }
 
