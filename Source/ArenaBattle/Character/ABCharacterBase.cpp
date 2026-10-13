@@ -317,7 +317,11 @@ void AABCharacterBase::ComboActionEnded(UAnimMontage* TargetMontage, bool bInter
 
 	// 몽타주 재생이 종료되면 캐릭터 이동 복구.
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	
+	// 공격 끝나는 시점을 알 수 있도록 가상 함수 호출.
+	NotifyComboActionEnd();
 }
+
 
 void AABCharacterBase::SetComboCheckTimer()
 {
@@ -383,7 +387,7 @@ void AABCharacterBase::AttackHitCheck()
 	//float AttackRange = 120.0f;
 	const float AttackRange = Stat->GetTotalStat().AttackRange;
 	// 트레이스에 사용할 구체의 반지름.
-	float AttackRadius = 50.0f;
+	const float AttackRadius = Stat->GetAttackRadius();
 
 	// 트레이스를 활용한 충돌 확인.
 	FHitResult OutHitResult;

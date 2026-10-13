@@ -9,8 +9,11 @@ UABCharacterStatComponent::UABCharacterStatComponent()
 {
 	//MaxHp = 200.0f;
 	//SetHp(MaxHp);
-		//  현재 레벨 설정.
+	// 현재 레벨 설정.
 	CurrentLevel = 1;
+
+	// 공격 반경 기본값 설정.
+	AttackRadius = 50.0f;
 
 }
 

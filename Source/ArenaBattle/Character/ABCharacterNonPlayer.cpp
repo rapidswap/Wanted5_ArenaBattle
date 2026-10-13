@@ -3,6 +3,8 @@
 
 #include "Character/ABCharacterNonPlayer.h"
 #include "AI/ABAIController.h"
+#include "CharacterStat/ABCharacterStatComponent.h"
+
 #include "Engine/AssetManager.h"
 
 AABCharacterNonPlayer::AABCharacterNonPlayer()
@@ -26,8 +28,8 @@ AABCharacterNonPlayer::AABCharacterNonPlayer()
 	if (CharacterAnim.Succeeded())
 	{
 		GetMesh()->SetAnimInstanceClass(CharacterAnim.Class);
-	}
 
+	}
 	// AIController 설정.
 	AIControllerClass = AABAIController::StaticClass();
 
@@ -88,4 +90,47 @@ void AABCharacterNonPlayer::NPCMeshLoadCompleted()
 
 	// 사용한 핸들 해제.
 	NPCMeshHandle->ReleaseHandle();
+}
+
+float AABCharacterNonPlayer::GetAIPatrolRadius()
+{
+	return 500.0f;
+}
+
+float AABCharacterNonPlayer::GetAIDetectRange()
+{
+	return 400.0f;
+}
+
+float AABCharacterNonPlayer::GetAIAttackRange()
+{
+	// 스탯의 공격 거리 + 공격 반경을 지름으로 계산해서 최종 공격 가능 거리 판단.
+	return Stat->GetTotalStat().AttackRange + Stat->GetAttackRadius() * 2.0f;
+}
+
+float AABCharacterNonPlayer::GetAITurnSpeed()
+{
+	return 2.0f;
+}
+
+void AABCharacterNonPlayer::AttackByAI()
+{
+	// 공격 실행.
+	ProcessComboCommand();
+
+	// 공격 끝나는 시점을 알 필요가 있음.
+}
+
+void AABCharacterNonPlayer::SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished)
+{
+	// 델리게이트에 전달된 로직 저장.
+	OnAttackFinished = InOnAttackFinished;
+}
+
+void AABCharacterNonPlayer::NotifyComboActionEnd()
+{
+	Super::NotifyComboActionEnd();
+
+	// 공격 종료를 알리는 델리게이트 호출.
+	OnAttackFinished.ExecuteIfBound();
 }
