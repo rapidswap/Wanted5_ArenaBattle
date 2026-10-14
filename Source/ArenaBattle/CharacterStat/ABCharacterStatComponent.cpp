@@ -7,6 +7,9 @@
 // Sets default values for this component's properties
 UABCharacterStatComponent::UABCharacterStatComponent()
 {
+	// bWantsInitializeComponents 값을 true로 설정해야 InitializeComponent가 호출됨.
+	bWantsInitializeComponent = true;
+
 	//MaxHp = 200.0f;
 	//SetHp(MaxHp);
 	// 현재 레벨 설정.
@@ -18,19 +21,15 @@ UABCharacterStatComponent::UABCharacterStatComponent()
 }
 
 
-// Called when the game starts
-void UABCharacterStatComponent::BeginPlay()
+void UABCharacterStatComponent::InitializeComponent()
 {
-	Super::BeginPlay();
+	Super::InitializeComponent();
 
-	//SetHp(MaxHp);
-	
 
 	SetLevelStat(CurrentLevel);
 	SetHp(BaseStat.MaxHp);
 
-	
-	
+
 }
 
 void UABCharacterStatComponent::SetLevelStat(int32 InNewLevel)
@@ -39,7 +38,8 @@ void UABCharacterStatComponent::SetLevelStat(int32 InNewLevel)
 	CurrentLevel = FMath::Clamp(InNewLevel,1,UABGameSingleton::Get().CharacterMaxLevel);
 
 	// 게임 싱글톤에 접근해서 레벨에 해당하는 스탯 데이터 설정.
-	BaseStat = UABGameSingleton::Get().GetCharacterStat(CurrentLevel);
+	//BaseStat = UABGameSingleton::Get().GetCharacterStat(CurrentLevel);
+	SetBaseStat(UABGameSingleton::Get().GetCharacterStat(CurrentLevel));
 
 	ensureAlways(BaseStat.MaxHp > 0.0f);
 }
