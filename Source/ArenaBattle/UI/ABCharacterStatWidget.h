@@ -25,9 +25,9 @@ public:
 private:
 	// 스탯 위젯이 가진 UI 항목 중에서 Base   스탯에 해당하는 텍스트 블록 모음.
 	UPROPERTY()
-	TMap<FName, class UTextBlock*> BaseLookUp;
+	TMap<FName, class UTextBlock*> BaseLookup;
 
 	// 스탯 위젯이 가진 UI 항목 중에서 Modifier   스탯에 해당하는 텍스트 블록 모음.
 	UPROPERTY()
-	TMap<FName, class UTextBlock*> ModifierLookUp;
+	TMap<FName, class UTextBlock*> ModifierLookup;
 };
