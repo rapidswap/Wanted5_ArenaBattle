@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -8,7 +8,7 @@
 
 // 스테이지 상태를 나타내는 열거형 선언.
 UENUM(BlueprintType)
-enum class EStageState :uint8
+enum class EStageState : uint8
 {
 	Ready = 0,
 	Fight,
@@ -16,21 +16,20 @@ enum class EStageState :uint8
 	Next
 };
 
-
-// 상태에 따른 처리르 위해 델리게이트 선언.
+// 상태에 따른 처리를 위해 델리게이트 선언.
 DECLARE_DELEGATE(FOnStageChangedDelegate);
 
 UCLASS()
 class ARENABATTLE_API AABStageGimmick : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AABStageGimmick();
 
 public:
-	// 변수 추가후 구현 필요함.
+	// 변수 추가 후 구현 필요함.
 	FORCEINLINE int32 GetStageNum() const { return CurrentStageNum; }
 	FORCEINLINE void SetStageNum(int32 NewStageNum)
 	{
@@ -44,11 +43,11 @@ protected:
 	// 스테이지 관련 변수 및 함수.
 protected:
 	// 스테이지 메시를 보여줄 때 사용할 컴포넌트.
-	UPROPERTY(VisibleAnywhere, Category = "Stage", meta=(AllowPrivateAccess="true"))
+	UPROPERTY(VisibleAnywhere, Category = Stage, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UStaticMeshComponent> Stage;
 
 	// 스테이지 진입 여부를 판단할 때 사용할 트리거.
-	UPROPERTY(VisibleAnywhere, Category = "Stage", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = Stage, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UBoxComponent> StageTrigger;
 
 	// 스테이지 트리거에 콜백으로 등록할 함수 선언.
@@ -59,16 +58,17 @@ protected:
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex,
 		bool bFromSweep,
-		const FHitResult& SweepResult);
+		const FHitResult& SweepResult
+	);
 
 	// 문(게이트) 관련 변수 및 함수 선언.
 protected:
 	// 4개의 문을 저장하는데 맵 컨테이너 활용. 이름 값으로 문을 관리.
-	UPROPERTY(VisibleAnywhere, Category = "Gate", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = Gate, meta = (AllowPrivateAccess = "true"))
 	TMap<FName, TObjectPtr<class UStaticMeshComponent>> Gates;
 
 	// 문 트리거를 배열로 관리.
-	UPROPERTY(VisibleAnywhere, Category = "Gate", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = Gate, meta = (AllowPrivateAccess = "true"))
 	TArray<TObjectPtr<class UBoxComponent>> GateTriggers;
 
 	// 문에 배치한 박스 컴포넌트와 충돌했을 때 실행할 콜백 함수.
@@ -79,18 +79,20 @@ protected:
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex,
 		bool bFromSweep,
-		const FHitResult& SweepResult);
+		const FHitResult& SweepResult
+	);
 
 	// 스테이지.
 protected:
 	// 현재 상태를 나타내는 열거형 선언.
-	UPROPERTY(EditAnywhere, Category = "Stage", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = Stage, meta = (AllowPrivateAccess = "true"))
 	EStageState CurrentState;
 
 	// 새로운 상태를 설정할 때 사용할 함수.
 	void SetState(EStageState InNewState);
 
 	// 상태에 따른 처리 분리를 위해 열거형-델리게이트 조합으로 관리.
+	//UPROPERTY()
 	TMap<EStageState, FOnStageChangedDelegate> StateChangeActions;
 
 	// 상태 변경에 따른 처리 함수.
@@ -106,36 +108,38 @@ protected:
 	// 대전 처리.
 protected:
 	// 캐릭터와 싸울 NPC 캐릭터 클래스 타입.
-	UPROPERTY(EditAnywhere, Category = "Fight",meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditAnywhere, Category = Fight, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class AABCharacterNonPlayer> OpponentClass;
 
 	// NPC 생성하기까지 대기할 시간.
-	UPROPERTY(EditAnywhere, Category = "Fight", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = Fight, meta = (AllowPrivateAccess = "true"))
 	float OpponentSpawnTime;
 
 	// NPC가 죽었을 때(Destroy 됐을 때) 발생하는 델리게이트에 등록할 함수.
 	UFUNCTION()
-	void OnOpponentDestroyed(AActor* DetroyedActor);
+	void OnOpponentDestroyed(AActor* DestroyedActor);
 
 	// 타이머 핸들.
 	FTimerHandle OpponentTimerHandle;
 
-	// 타이머 종료 후에 NPC 생성세 사용할 함수.
+	// 타이머 종료 후에 NPC 생성에 사용할 함수.
 	void OnOpponentSpawn();
 
 	// 보상 관련 섹션.
 protected:
 	// 아이템 상자를 생성하기 위한 클래스 타입.
-	UPROPERTY(VisibleAnywhere, Category = "Reward", meta=(AllowPrivateAccess="true"))
+	UPROPERTY(VisibleAnywhere, Category = Reward, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class AABItemBox> RewardBoxClass;
 
 	// 4개의 보상 상자를 생성함.
 	// 생성된 4개의 액터를 저장하기 위한 배열.
-	// 생성하는 아이템 상자와 스테이지 기믹 액터와는 소유관계가 없기 때문에 약참조하는 것이 좋음.
+	// 생성하는 아이템 상자와 스테이지 기믹 액터와는 소유관계가 없기 때문에 
+	// 약참조하는 것이 좋음.
+	UPROPERTY(VisibleAnywhere, Category = Reward, meta = (AllowPrivateAccess = "true"))
 	TArray<TWeakObjectPtr<class AABItemBox>> RewardBoxes;
 
 	// 아이템 상자를 생성할 4곳의 생성 위치.
-	TMap<FName, FVector> ReawardBoxLocations;
+	TMap<FName, FVector> RewardBoxLocations;
 
 	// 생성된 아이템 상자와 오버랩 반응을 하면 실행할 함수.
 	UFUNCTION()
@@ -145,14 +149,14 @@ protected:
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex,
 		bool bFromSweep,
-		const FHitResult& SweepResult);
+		const FHitResult& SweepResult
+	);
 
 	// 아이템 상자 생성 함수.
 	void SpawnRewardBoxes();
 
-	protected:
-		// 스테이지 섹션.
-		UPROPERTY(VisibleInstanceOnly, Category = "Stat", meta = (AllowPrivateAccess = "true"))
-		int32 CurrentStageNum;
-
+	// 스테이지 섹션.
+protected:
+	UPROPERTY(VisibleInstanceOnly, Category = Stat, meta = (AllowPrivateAccess = "true"))
+	int32 CurrentStageNum;
 };

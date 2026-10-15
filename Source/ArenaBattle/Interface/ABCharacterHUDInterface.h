@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -24,6 +24,4 @@ class ARENABATTLE_API IABCharacterHUDInterface
 public:
 	// 캐릭터에서 HUD 위젯을 설정할 때 사용할 함수.
 	virtual void SetupHUDWidget(class UABHUDWidget* InHUDWidget) = 0;
-
-
 };

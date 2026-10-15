@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Character/ABCharacterBase.h"
+#include <Interface/ABCharacterHUDInterface.h>
 #include <InputActionValue.h>
-#include "Interface/ABCharacterHUDInterface.h"
 #include "ABCharacterPlayer.generated.h"
 
 // 전방 선언.
@@ -15,7 +15,9 @@ class UInputAction;
  * 
  */
 UCLASS()
-class ARENABATTLE_API AABCharacterPlayer : public AABCharacterBase, public IABCharacterHUDInterface
+class ARENABATTLE_API AABCharacterPlayer 
+	: public AABCharacterBase,
+	public IABCharacterHUDInterface
 {
 	GENERATED_BODY()
 	
@@ -87,13 +89,15 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = Input, BlueprintReadOnly)
 	TObjectPtr<UInputAction> ChangeControlAction;
 
-	UPROPERTY(VisibleAnywhere, Category = Input,BlueprintReadOnly)
+	// 공격 입력 액션.
+	UPROPERTY(VisibleAnywhere, Category = Input, BlueprintReadOnly)
 	TObjectPtr<UInputAction> AttackAction;
 
 	// 현재 사용 중인 컨트롤 타입을 추적(저장)하는 변수.
 	UPROPERTY(VisibleAnywhere, Category = CharacterControl)
 	ECharacterControlType CurrentCharacterControlType;
 
+	// UI 섹션.
 protected:
 	// IABCharacterHUDInterface 구현.
 	virtual void SetupHUDWidget(UABHUDWidget* InHUDWidget) override;

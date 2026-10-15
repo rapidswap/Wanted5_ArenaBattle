@@ -2,57 +2,58 @@
 
 
 #include "Item/ABItemBox.h"
-#include "Physics/ABCollision.h"
-#include "Interface/ABCharacterItemInterface.h"
-#include "Item/ABItemData.h"
+#include <Item/ABItemData.h>
+#include <Physics/ABCollision.h>
+#include <Interface/ABCharacterItemInterface.h>
 
-#include "Components/BoxComponent.h"
-#include "Components/StaticMeshComponent.h"
-#include "Particles/ParticleSystemComponent.h"
-#include "Engine/AssetManager.h"
-
+#include <Components/BoxComponent.h>
+#include <Components/StaticMeshComponent.h>
+#include <Particles/ParticleSystemComponent.h>
+#include <Engine/AssetManager.h>
 
 // Sets default values
 AABItemBox::AABItemBox()
 {
 	// 컴포넌트 생성.
-	Trigger = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
-
+	Trigger = CreateDefaultSubobject<UBoxComponent>(TEXT("Trigger"));
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-
 	Effect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Effect"));
 
 	// 컴포넌트 계층 설정.
 	RootComponent = Trigger;
-
 	Mesh->SetupAttachment(Trigger);
 	Effect->SetupAttachment(Trigger);
 
 	// 박스 컴포넌트에 콜리전 프로필 설정.
 	Trigger->SetCollisionProfileName(CPROFILE_ABTRIGGER);
 
-	//// 박스 컴포넌트의 BeginOverlap 델리게이트에 함수 등록.
+	// 박스 컴포넌트의 BeginOverlap 델리게이트에 함수 등록.
 	//Trigger->OnComponentBeginOverlap.AddDynamic(this, &AABItemBox::OnOverlapBegin);
 
 	// 박스 충돌 영역 크기 조정.
 	Trigger->SetBoxExtent(FVector(40.0f, 45.0f, 32.0f));
 
 	// 박스 스태틱 메시 애셋 로드.
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> BoxMeshRef(TEXT("/Game/ArenaBattle/Environment/Props/SM_Env_Breakables_Box1.SM_Env_Breakables_Box1"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> BoxMeshRef(
+		TEXT("/Game/ArenaBattle/Environment/Props/SM_Env_Breakables_Box1.SM_Env_Breakables_Box1")
+	);
+
 	if (BoxMeshRef.Succeeded())
 	{
 		// 로드한 스태틱 메시 애셋 설정.
 		Mesh->SetStaticMesh(BoxMeshRef.Object);
 	}
 
-	// 위치 조정.
+	// 위치 조정 (에디터에서 조정 후 데이터 설정).
 	Mesh->SetRelativeLocation(FVector(0.0f, -3.0f, -30.0f));
 
 	// 콜리전 끄기.
 	Mesh->SetCollisionProfileName(CPROFILE_NOCOLLISION);
 
 	// 파티클 애셋 로드.
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> EffectRef(TEXT("/Game/ArenaBattle/Effect/P_TreasureChest_Open_Mesh.P_TreasureChest_Open_Mesh"));
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> EffectRef(
+		TEXT("/Game/ArenaBattle/Effect/P_TreasureChest_Open_Mesh.P_TreasureChest_Open_Mesh")
+	);
 
 	if (EffectRef.Succeeded())
 	{
@@ -71,11 +72,11 @@ void AABItemBox::PostInitializeComponents()
 	// 박스 컴포넌트의 BeginOverlap 델리게이트에 함수 등록.
 	Trigger->OnComponentBeginOverlap.AddDynamic(this, &AABItemBox::OnOverlapBegin);
 
-	// 에셋 매니저를 통해서 사용할 애셋 목록 가져오기.
+	// 애셋 매니저를 통해서 사용할 애셋 목록 가져오기.
 	UAssetManager& Manager = UAssetManager::Get();
-
+	
+	// 설정한 애셋 태그를 활용해 애셋 목록 가져오기.
 	TArray<FPrimaryAssetId> Assets;
-
 	Manager.GetPrimaryAssetIdList(TEXT("ABItemData"), Assets);
 
 	// 확인.
@@ -85,7 +86,7 @@ void AABItemBox::PostInitializeComponents()
 	int32 RandomIndex = FMath::RandRange(0, Assets.Num() - 1);
 
 	// 선택된 인덱스로 접근해서 애셋 참조.
-	TSoftObjectPtr AssetPtr(Manager.GetPrimaryAssetPath(Assets[RandomIndex]));
+	FSoftObjectPtr AssetPtr(Manager.GetPrimaryAssetPath(Assets[RandomIndex]));
 
 	// 애셋 로드 - 로드되지 않은 애셋 로드.
 	if (AssetPtr.IsPending())
@@ -95,28 +96,29 @@ void AABItemBox::PostInitializeComponents()
 
 	// 로드한 애셋을 기반으로 아이템 데이터 설정.
 	Item = Cast<UABItemData>(AssetPtr.Get());
-	
-	// 확인.
+
+	// 확인 - 아이템 값이 제대로 설정됐는지.
 	ensureAlways(Item);
 }
 
 void AABItemBox::OnOverlapBegin(
-	UPrimitiveComponent* OverlappedComponent,
-	AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex,
-	bool bFromSweep,
+	UPrimitiveComponent* OverlappedComponent, 
+	AActor* OtherActor, 
+	UPrimitiveComponent* OtherComp, 
+	int32 OtherBodyIndex, 
+	bool bFromSweep, 
 	const FHitResult& SweepResult)
 {
-	// 유효성 검사.
-	// ->꽝.
+	// 유효성 검사 -> 꽝.
 	if (!Item)
 	{
 		Destroy();
 		return;
 	}
 
-	IABCharacterItemInterface* OverlappingPawn = Cast<IABCharacterItemInterface>(OtherActor);
+	// 아이템 수집 처리를 위해 인터페이스를 통한 전달.
+	IABCharacterItemInterface* OverlappingPawn 
+		= Cast<IABCharacterItemInterface>(OtherActor);
 	if (OverlappingPawn)
 	{
 		OverlappingPawn->TakeItem(Item);
@@ -133,12 +135,10 @@ void AABItemBox::OnOverlapBegin(
 
 	// 파티클 재생 종료 시 호출되는 델리게이트에 함수 등록.
 	Effect->OnSystemFinished.AddDynamic(this, &AABItemBox::OnEffectFinished);
-	
 }
 
 void AABItemBox::OnEffectFinished(UParticleSystemComponent* PSystem)
 {
 	// 액터 제거.
-	Destroy();                  
+	Destroy();
 }
-

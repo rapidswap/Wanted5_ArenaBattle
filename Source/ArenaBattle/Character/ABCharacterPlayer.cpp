@@ -3,8 +3,8 @@
 
 #include "Character/ABCharacterPlayer.h"
 #include "ABCharacterControlData.h"
-#include "UI/ABHUDWidget.h"
-#include "CharacterStat/ABCharacterStatComponent.h"
+#include <UI/ABHUDWidget.h>
+#include <CharacterStat/ABCharacterStatComponent.h>
 
 #include <GameFramework/SpringArmComponent.h>
 #include <GameFramework/CharacterMovementComponent.h>
@@ -52,7 +52,7 @@ AABCharacterPlayer::AABCharacterPlayer()
 
 	// 메시 애셋 지정.
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMesh(
-		TEXT("/Game/InfinityBladeWarriors/Character/CompleteCharacters/SK_CharM_Robo.SK_CharM_Robo")
+		TEXT("/Game/InfinityBladeWarriors/Character/CompleteCharacters/SK_CharM_Cardboard.SK_CharM_Cardboard")
 	);
 
 	// 애셋 로드에 성공하면 스켈레탈 메시 설정.
@@ -128,7 +128,6 @@ AABCharacterPlayer::AABCharacterPlayer()
 		AttackAction = AttackActionRef.Object;
 	}
 
-
 	// 기본 컨트롤 설정.
 	CurrentCharacterControlType = ECharacterControlType::Shoulder;
 }
@@ -139,15 +138,15 @@ void AABCharacterPlayer::BeginPlay()
 
 	// 입력 활성화를 위해 플레이어 컨트롤러 참조 얻기.
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+
+	// 입력 활성화 처리.
 	if (nullptr != PlayerController)
 	{
-		// 캐릭터가 죽으면 입력이 되지 않도록 비활성화.
 		EnableInput(PlayerController);
 	}
 
 	// 초기 입력 컨트롤 설정.
 	SetCharacterControl(CurrentCharacterControlType);
-	
 }
 
 void AABCharacterPlayer::SetDead()
@@ -156,13 +155,12 @@ void AABCharacterPlayer::SetDead()
 
 	// 입력 비활성화를 위해 플레이어 컨트롤러 참조 얻기.
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+
 	if (nullptr != PlayerController)
 	{
 		// 캐릭터가 죽으면 입력이 되지 않도록 비활성화.
 		DisableInput(PlayerController);
 	}
-
-
 }
 
 void AABCharacterPlayer::SetupPlayerInputComponent(
@@ -218,6 +216,7 @@ void AABCharacterPlayer::SetupPlayerInputComponent(
 			&AABCharacterPlayer::ChangeCharacterControl
 		);
 
+		// 공격 입력 액션 처리.
 		EnhancedInputComponent->BindAction(
 			AttackAction,
 			ETriggerEvent::Triggered,
@@ -369,6 +368,7 @@ void AABCharacterPlayer::Attack()
 
 void AABCharacterPlayer::SetupHUDWidget(UABHUDWidget* InHUDWidget)
 {
+	// 값 확인.
 	if (nullptr == InHUDWidget)
 	{
 		return;

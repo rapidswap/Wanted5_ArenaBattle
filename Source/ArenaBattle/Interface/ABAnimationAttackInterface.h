@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -22,6 +22,6 @@ class ARENABATTLE_API IABAnimationAttackInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	// 공격 판정 요청 순수 가상 함수.
+	// 공격 판정 요청 순수 가상 함수(=인터페이스).
 	virtual void AttackHitCheck() = 0;
 };

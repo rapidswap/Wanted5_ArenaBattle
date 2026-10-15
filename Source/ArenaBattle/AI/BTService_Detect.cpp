@@ -1,15 +1,14 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "AI/BTService_Detect.h"
-#include "Interface/ABCharacterAIInterface.h"
-#include "Physics/ABCollision.h"
+#include <Physics/ABCollision.h>
+#include <Interface/ABCharacterAIInterface.h>
 #include "ABAI.h"
 
-#include "Engine/OverlapResult.h"
-#include "BehaviorTree/BlackboardComponent.h"
-#include "AIController.h"
-
+#include <AIController.h>
+#include <Engine/OverlapResult.h>
+#include <BehaviorTree/BlackboardComponent.h>
 
 UBTService_Detect::UBTService_Detect()
 {
@@ -20,11 +19,14 @@ UBTService_Detect::UBTService_Detect()
 	Interval = 1.0f;
 }
 
-void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+void UBTService_Detect::TickNode(
+	UBehaviorTreeComponent& OwnerComp,
+	uint8* NodeMemory,
+	float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-	// 충돌 기능을 활용하기 위해 월드객체 얻어오기.
+	// 충돌 기능을 활용하기 위해 월드 객체 얻어오기.
 	// -> 제어하는 폰으로부터 얻어오기.
 	APawn* ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
 	if (!ControllingPawn)
@@ -40,25 +42,24 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	}
 
 	// 충돌 범위를 얻어올 인터페이스로 형변환.
-	IABCharacterAIInterface* AIPawn = Cast<IABCharacterAIInterface>(ControllingPawn);
-	if (!AIPawn)
+	IABCharacterAIInterface* AIPawn
+		= Cast<IABCharacterAIInterface>(ControllingPawn);
+	if (nullptr == AIPawn)
 	{
 		return;
 	}
-
 
 	// 충돌 결과로 정보를 반환받을 변수.
 	TArray<FOverlapResult> OverlapResults;
 
 	// 충돌 감지를 시작할 위치 = 제어하는 폰의 위치.
 	FVector Center = ControllingPawn->GetActorLocation();
-	
+
 	// 충돌 감지할 반경.
 	float DetectRadius = AIPawn->GetAIDetectRange();
-	
+
 	// 콜리전 파라미터.
 	FCollisionQueryParams Params(
-
 		SCENE_QUERY_STAT(Detect),
 		false,
 		ControllingPawn
@@ -83,12 +84,14 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 			// 충돌에서 감지한 액터를 폰으로 형변환.
 			APawn* Pawn = Cast<APawn>(OverlapResult.GetActor());
 
-			// 플레이어인지 확인.
-			// 폰을 제어하는 컨트롤러가 플레이어 컨트롤러인지 확인.
+			// 플레이어인지 확인 => 폰을 제어하는 컨트롤러가 플레이어 컨트롤러인지 확인.
 			if (nullptr != Pawn && Pawn->GetController()->IsPlayerController())
 			{
 				// 감지된 정보를 블랙보드에 저장.
-				OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, Pawn);
+				OwnerComp.GetBlackboardComponent()->SetValueAsObject(
+					BBKEY_TARGET,
+					Pawn
+				);
 
 				// 디버그 드로우를 활용해서 시각적으로 표시.
 				DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Green, false, 0.2f);
@@ -103,12 +106,10 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 			}
 		}
 	}
-	
+
 	// 충돌 감지를 못한 경우에는 타겟 액터를 null로 지정.
 	OwnerComp.GetBlackboardComponent()->SetValueAsObject(BBKEY_TARGET, nullptr);
 
-	// 감지영역을 빨간색으로 표시.
+	// 감지 영역을 빨간색으로 표시.
 	DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Red, false, 0.2f);
 }
-
-

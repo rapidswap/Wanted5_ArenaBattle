@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -15,13 +15,15 @@ class ARENABATTLE_API UABUserWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+
+	// 생성자.
 	UABUserWidget(const FObjectInitializer& ObjectInitializer);
+
 	// Setter.
 	FORCEINLINE void SetOwningActor(AActor* NewOwner) { OwningActor = NewOwner; }
-
+	
 protected:
 	// 이 위젯을 소유하는 액터.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Actor")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Actor)
 	TObjectPtr<AActor> OwningActor;
-	
 };

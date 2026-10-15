@@ -1,11 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/ABCharacterNonPlayer.h"
-#include "AI/ABAIController.h"
-#include "CharacterStat/ABCharacterStatComponent.h"
-
-#include "Engine/AssetManager.h"
+#include <AI/ABAIController.h>
+#include <CharacterStat/ABCharacterStatComponent.h>
+#include <Engine/AssetManager.h>
 
 AABCharacterNonPlayer::AABCharacterNonPlayer()
 {
@@ -20,7 +19,7 @@ AABCharacterNonPlayer::AABCharacterNonPlayer()
 
 	// 애님 블루프린트 클래스 검색 및 설정.
 	// /Game/Characters/Mannequins/Anims/Unarmed/ABP_Unarmed.ABP_Unarmed
-	static ConstructorHelpers::FClassFinder<UAnimInstance> CharacterAnim(                                                                                                                                                                 
+	static ConstructorHelpers::FClassFinder<UAnimInstance> CharacterAnim(
 		TEXT("/Game/ArenaBattle/Animation/ABP_ABCharacter.ABP_ABCharacter_C")
 	);
 
@@ -28,14 +27,15 @@ AABCharacterNonPlayer::AABCharacterNonPlayer()
 	if (CharacterAnim.Succeeded())
 	{
 		GetMesh()->SetAnimInstanceClass(CharacterAnim.Class);
-
 	}
+
 	// AIController 설정.
 	AIControllerClass = AABAIController::StaticClass();
 
 	// 빙의(Possess) 옵션 설정.
+	// 월드 공간에 미리 배치된 경우 및 
+	// 런타임에 생성된 경우 모두 AIController에서 빙의하도록 설정.
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-
 }
 
 void AABCharacterNonPlayer::PostInitializeComponents()
@@ -50,7 +50,12 @@ void AABCharacterNonPlayer::PostInitializeComponents()
 
 	// 비동기로 메시 로드.
 	NPCMeshHandle = UAssetManager::Get().GetStreamableManager().RequestAsyncLoad(
-		NPCMeshes[RandIndex], FStreamableDelegate::CreateUObject(this, &AABCharacterNonPlayer::NPCMeshLoadCompleted));
+		NPCMeshes[RandIndex],
+		FStreamableDelegate::CreateUObject(
+			this,
+			&AABCharacterNonPlayer::NPCMeshLoadCompleted
+		)
+	);
 }
 
 void AABCharacterNonPlayer::SetDead()
@@ -70,13 +75,13 @@ void AABCharacterNonPlayer::SetDead()
 		DeadTimerHandle,
 		FTimerDelegate::CreateLambda([this]()
 			{
+				// 액터 제거.
 				Destroy();
 			}
 		),
 		DeadEventDelayTime,
 		false
 	);
-	
 }
 
 void AABCharacterNonPlayer::NPCMeshLoadCompleted()
@@ -91,7 +96,7 @@ void AABCharacterNonPlayer::NPCMeshLoadCompleted()
 		{
 			GetMesh()->SetSkeletalMesh(NPCMesh);
 
-			// 메시 컴포넌트 보이도록 설정.		
+			// 메시 컴포넌트 보이도록 설정.
 			GetMesh()->SetHiddenInGame(false);
 		}
 	}
@@ -129,7 +134,8 @@ void AABCharacterNonPlayer::AttackByAI()
 	// 공격 끝나는 시점을 알 필요가 있음.
 }
 
-void AABCharacterNonPlayer::SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished)
+void AABCharacterNonPlayer::SetAIAttackDelegate(
+	const FAICharacterAttackFinished& InOnAttackFinished)
 {
 	// 델리게이트에 전달된 로직 저장.
 	OnAttackFinished = InOnAttackFinished;

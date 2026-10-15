@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -19,5 +19,6 @@ public:
 
 protected:
 	// 태스크 실행을 시작할 때 호출되는 함수.
-	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	virtual EBTNodeResult::Type ExecuteTask(
+		UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };

@@ -6,6 +6,9 @@
 #include "GameFramework/PlayerController.h"
 #include "ABPlayerController.generated.h"
 
+// 전방 선언.
+class UABHUDWidget;
+
 /**
  * 
  */
@@ -22,10 +25,10 @@ private:
 
 protected:
 	// 위젯 클래스 정보.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
-	TSubclassOf<class UABHUDWidget> ABHUDWidgetClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HUD)
+	TSubclassOf<UABHUDWidget> ABHUDWidgetClass;
 
 	// 생성한 위젯을 저장할 변수.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HUD")
-	TObjectPtr<class UABHUDWidget> ABHUDWidget;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = HUD)
+	TObjectPtr<UABHUDWidget> ABHUDWidget;
 };

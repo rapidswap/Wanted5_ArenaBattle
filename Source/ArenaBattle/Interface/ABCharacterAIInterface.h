@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -29,14 +29,14 @@ public:
 	virtual float GetAIPatrolRadius() = 0;
 
 	virtual float GetAIDetectRange() = 0;
-
 	virtual float GetAIAttackRange() = 0;
-	
 	virtual float GetAITurnSpeed() = 0;
 
 	// AI를 통해 공격 메시지를 전달할 때 사용할 함수.
 	virtual void AttackByAI() = 0;
 
 	// 캐릭터에 델리게이트를 전달할 때 사용할 함수.
-	virtual void SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished) = 0;
+	virtual void SetAIAttackDelegate(
+		const FAICharacterAttackFinished& InOnAttackFinished
+	) = 0;
 };

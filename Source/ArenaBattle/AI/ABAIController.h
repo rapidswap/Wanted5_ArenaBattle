@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -24,14 +24,16 @@ public:
 	void StopAI();
 
 protected:
-	virtual void OnPossess(APawn* InPawn);
+
+	// 컨트롤러가 폰에 빙의(소유)할 때 호출되는 함수.
+	virtual void OnPossess(APawn* InPawn) override;
 
 private:
 	// 블랙보드 애셋.
-	UPROPERTY(VisibleAnywhere, Category = "AI")
+	UPROPERTY(VisibleAnywhere, Category = AI)
 	TObjectPtr<class UBlackboardData> BBAsset;
 
 	// 비헤이비어 트리 애셋.
-	UPROPERTY(VisibleAnywhere, Category = "AI")
+	UPROPERTY(VisibleAnywhere, Category = AI)
 	TObjectPtr<class UBehaviorTree> BTAsset;
 };

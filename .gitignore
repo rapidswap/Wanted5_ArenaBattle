@@ -35,6 +35,7 @@
 *.xcodeproj
 *.xcworkspace
 *.sln
+*.slnx
 *.suo
 *.opensdf
 *.sdf
@@ -73,11 +74,3 @@ Plugins/**/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
-
-# Generated files for Unreal projects nested under this repository
-**/Binaries/*
-**/Plugins/**/Binaries/*
-**/Saved/*
-**/Intermediate/*
-**/Plugins/**/Intermediate/*
-**/DerivedDataCache/*

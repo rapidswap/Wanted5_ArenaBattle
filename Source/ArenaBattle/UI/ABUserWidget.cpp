@@ -4,6 +4,6 @@
 #include "UI/ABUserWidget.h"
 
 UABUserWidget::UABUserWidget(const FObjectInitializer& ObjectInitializer)
-	:Super(ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 }
