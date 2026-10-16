@@ -4,6 +4,8 @@
 #include "Player/ABPlayerController.h"
 #include <UI/ABHUDWidget.h>
 
+
+
 AABPlayerController::AABPlayerController()
 {
 	// 위젯 블루프린트 애셋에서 클래스 정보 바인딩(연결).
@@ -18,6 +20,24 @@ AABPlayerController::AABPlayerController()
 	}
 }
 
+void AABPlayerController::GameScoreChanged(int32 NewScore)
+{
+	// 블루프린트에서 구현할 함수가 호출될 수 있도록 처리.
+	K2_OnScoreChanged(NewScore);
+}
+
+void AABPlayerController::GameClear()
+{
+	K2_OnGameClear();
+}
+
+void AABPlayerController::GameOver()
+{
+	K2_OnGameOver();
+}
+
+
+
 void AABPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -27,11 +47,11 @@ void AABPlayerController::BeginPlay()
 	SetInputMode(GameOnlyInputMode);
 
 	// 위젯 생성.
-	ABHUDWidget = CreateWidget<UABHUDWidget>(this, ABHUDWidgetClass);
-
-	// 문제 없이 생성됐다면 화면에 추가.
-	if (nullptr != ABHUDWidget)
-	{
-		ABHUDWidget->AddToViewport();
-	}
+	//ABHUDWidget = CreateWidget<UABHUDWidget>(this, ABHUDWidgetClass);
+	//
+	//// 문제 없이 생성됐다면 화면에 추가.
+	//if (nullptr != ABHUDWidget)
+	//{
+	//	ABHUDWidget->AddToViewport();
+	//}
 }
